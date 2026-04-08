@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - ProManage{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar py-3">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'dashboard' %}">
+                            <i class="bi bi-house-door me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'project_list' %}">
+                            <i class="bi bi-folder me-2"></i> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_tasks' %}">
+                            <i class="bi bi-check2-square me-2"></i> My Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">
+                            <i class="bi bi-person me-2"></i> Profile
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <h2 class="mb-4">Dashboard</h2>
+            
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title">Total Projects</h6>
+                                    <h2 class="mb-0">{{ total_projects }}</h2>
+                                </div>
+                                <i class="bi bi-folder fs-1 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title">Completed Tasks</h6>
+                                    <h2 class="mb-0">{{ completed_tasks }}</h2>
+                                </div>
+                                <i class="bi bi-check-circle fs-1 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title">In Progress</h6>
+                                    <h2 class="mb-0">{{ in_progress_tasks }}</h2>
+                                </div>
+                                <i class="bi bi-hourglass-split fs-1 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title">My Tasks</h6>
+                                    <h2 class="mb-0">{{ my_tasks }}</h2>
+                                </div>
+                                <i class="bi bi-list-task fs-1 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Projects -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Recent Projects</h5>
+                            <a href="{% url 'project_create' %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-plus"></i> New Project
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            {% if projects %}
+                            <div class="list-group list-group-flush">
+                                {% for project in projects %}
+                                <a href="{% url 'project_detail' project.id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ project.title }}</h6>
+                                            <small class="text-muted">{{ project.tasks.count }} tasks</small>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">
+                                            {{ project.tasks.filter.status|length|default:0 }}
+                                        </span>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-muted text-center py-4">No projects yet. Create your first project!</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tasks -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">My Recent Tasks</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if my_task_list %}
+                            <div class="list-group list-group-flush">
+                                {% for task in my_task_list %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ task.title }}</h6>
+                                            <small class="text-muted">{{ task.project.title }}</small>
+                                        </div>
+                                        {% if task.status == 'TODO' %}
+                                        <span class="badge bg-secondary">To Do</span>
+                                        {% elif task.status == 'IN_PROGRESS' %}
+                                        <span class="badge bg-warning">In Progress</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Done</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-muted text-center py-4">No tasks assigned to you.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

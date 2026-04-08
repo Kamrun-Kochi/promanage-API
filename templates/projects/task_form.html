@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ form_title }} - ProManage{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ form_title }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label">Task Title</label>
+                            <input type="text" name="title" id="id_title" class="form-control" 
+                                   value="{{ form.title.value|default:'' }}" required>
+                            {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_status" class="form-label">Status</label>
+                            <select name="status" id="id_status" class="form-select">
+                                <option value="TODO" {% if form.status.value == 'TODO' %}selected{% endif %}>To Do</option>
+                                <option value="IN_PROGRESS" {% if form.status.value == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                                <option value="DONE" {% if form.status.value == 'DONE' %}selected{% endif %}>Done</option>
+                            </select>
+                            {% if form.status.errors %}
+                            <div class="text-danger">
+                                {% for error in form.status.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_assigned_to" class="form-label">Assign To</label>
+                            <select name="assigned_to" id="id_assigned_to" class="form-select">
+                                <option value="">-- Unassigned --</option>
+                                {% for user in users %}
+                                <option value="{{ user.id }}" {% if form.assigned_to.value == user.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ user.get_full_name|default:user.username }} ({{ user.email }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.assigned_to.errors %}
+                            <div class="text-danger">
+                                {% for error in form.assigned_to.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_due_date" class="form-label">Due Date</label>
+                            <input type="date" name="due_date" id="id_due_date" class="form-control" 
+                                   value="{{ form.due_date.value|default:'' }}">
+                            {% if form.due_date.errors %}
+                            <div class="text-danger">
+                                {% for error in form.due_date.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'project_detail' project_id %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Save Task
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
