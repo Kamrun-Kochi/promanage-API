@@ -57,13 +57,13 @@ class TestUserLogin:
 @pytest.mark.django_db
 class TestUserProfile:
     def test_get_current_user(self, authenticated_client, user):
-        url = reverse('user-detail', kwargs={'pk': user.pk})
+        url = reverse('user-detail')
         response = authenticated_client.get(url)
         assert response.status_code == status.HTTP_200_OK
         assert response.data['email'] == user.email
 
     def test_update_profile(self, authenticated_client, user):
-        url = reverse('user-detail', kwargs={'pk': user.pk})
+        url = reverse('user-detail')
         data = {
             'username': 'updateduser',
             'bio': 'New bio'
@@ -73,6 +73,6 @@ class TestUserProfile:
         assert response.data['bio'] == 'New bio'
 
     def test_unauthenticated_access_denied(self, api_client, user):
-        url = reverse('user-detail', kwargs={'pk': user.pk})
+        url = reverse('user-detail')
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED

@@ -200,3 +200,14 @@ class ProjectTasksView(generics.ListCreateAPIView):
                 task_title=task.title,
                 project_title=project.title
             )
+
+
+class MyTasksView(generics.ListAPIView):
+    """
+    API endpoint to list tasks assigned to the current user.
+    """
+    serializer_class = TaskListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Task.objects.filter(assigned_to=self.request.user)
