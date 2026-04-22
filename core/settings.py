@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.users.apps.UsersConfig',
     'apps.projects.apps.ProjectsConfig',
     'apps.common.apps.CommonConfig',
+    'pytest_django',
 ]
 
 MIDDLEWARE = [
