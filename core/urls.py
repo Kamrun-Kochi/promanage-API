@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from apps.users.template_views import (
     home, user_login, user_signup, user_logout, 
     dashboard, profile, profile_update, password_change
@@ -56,3 +58,8 @@ urlpatterns = [
     path('api/users/', include('apps.users.urls')),
     path('api/projects/', include('apps.projects.urls')),
 ]
+
+# Serve media and static files in debug mode
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
